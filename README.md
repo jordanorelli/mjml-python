@@ -107,6 +107,14 @@ send_mail(
 
 ## Development
 
+With [Nix](https://nixos.org/): 
+
+```sh
+nix-shell
+```
+
+With Python 3.7+, Rust and Cargo installed:
+
 ```sh
 python -m venv env
 source env/bin/activate
