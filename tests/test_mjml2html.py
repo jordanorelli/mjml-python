@@ -75,6 +75,7 @@ class TestFonts(unittest.TestCase):
 
     def test_default(self):
         result = mjml2html(self.string, fonts=None)
+        self.assertNotIn("https://example.com/fonts?family=Honk", result)
         self.assertIn("https://fonts.googleapis.com/css?family=Open+Sans", result)
 
     def test_override(self):
@@ -84,6 +85,21 @@ class TestFonts(unittest.TestCase):
                 "Honk": "https://example.com/fonts?family=Honk",
                 "Open Sans": "https://example.com/fonts?family=Open+Sans",
             },
+        )
+        self.assertIn("https://example.com/fonts?family=Honk", result)
+        self.assertIn("https://example.com/fonts?family=Open+Sans", result)
+
+    def test_head_override(self):
+        result = mjml2html(
+            self.string.replace(
+                "<mjml>",
+                """
+                    <mjml><mj-head>
+                    <mj-font name="Honk" href="https://example.com/fonts?family=Honk"></mj-font>
+                    <mj-font name="Open Sans" href="https://example.com/fonts?family=Open+Sans"></mj-font>
+                    </mj-head>
+                """,
+            )
         )
         self.assertIn("https://example.com/fonts?family=Honk", result)
         self.assertIn("https://example.com/fonts?family=Open+Sans", result)
@@ -151,4 +167,7 @@ class TestIncludeLoader(unittest.TestCase):
         """
         strings = {"styles.css": ".some-class { font-family: monospace }"}
         result = mjml2html(mjml, include_loader=strings.__getitem__)
-        self.assertRegex(result, r"<style type=\"text/css\">.some-class { font-family: monospace }</style>")
+        self.assertRegex(
+            result,
+            r"<style type=\"text/css\">.some-class { font-family: monospace }</style>",
+        )
